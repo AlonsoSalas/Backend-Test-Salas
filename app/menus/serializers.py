@@ -21,20 +21,23 @@ class MenuSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         dishes = validated_data.pop('dishes')
         menu = Menu.objects.create(**validated_data)
-        if dishes:
-            Menu.objects.setDishes(dishes, menu)
+
+        validated_dishes = Dish.objects.validateDishes(dishes)
+        if validated_dishes:
+            menu.dishes.set(validated_dishes)
+
         return menu
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
-        if not instance.isTodayMenu():
-            instance.date = validated_data.get('date', instance.date)
-
-        instance.save()
-
         dishes = validated_data.pop('dishes')
 
-        if dishes:
-            Menu.objects.setDishes(dishes, instance)
+        if not instance.isTodayMenu():
+            instance.date = validated_data.get('date', instance.date)
+        instance.save()
+
+        validated_dishes = Dish.objects.validateDishes(dishes)
+        if validated_dishes:
+            instance.dishes.set(validated_dishes)
 
         return instance
