@@ -5,6 +5,9 @@ from datetime import datetime as dt
 import datetime
 import os
 from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, NotFound
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.timezone import localdate
 
 # Create your models here.
 
@@ -29,12 +32,24 @@ class Menu(models.Model):
         limit_datetime = dt(
             today.year, today.month, today.day, limit_hour)
 
-        print(dt.now())
-        print(limit_datetime)
-
-        if self.isTodayMenu() or dt.now() > limit_datetime:
+        if dt.now() > limit_datetime:
             raise ValidationError(
                 {'detail': f'The menu was avialiable until "{limit_hour}"'})
+        pass
+
+    def validateDishesBelonging(self, dishes):
+        validatedDishes = []
+        if dishes:
+            for dish in dishes:
+                dish_name = dish['name']
+                try:
+                    dish_instance = self.dishes.get(
+                        name=dish_name)
+                except ObjectDoesNotExist:
+                    raise NotFound(
+                        {'detail': f'There\'s no dish with name "{dish_name}" in today`s Menu'})
+                validatedDishes.append(dish_instance)
+        return validatedDishes
 
     class Meta:
         ordering = ['-date']
