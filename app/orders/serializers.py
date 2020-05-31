@@ -8,26 +8,40 @@ from rest_framework.exceptions import ValidationError, NotFound
 
 class OrderSerializer(serializers.ModelSerializer):
     dishes = DishSerializer(many=True)
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    note = serializers.CharField(allow_blank=True)
 
     class Meta:
         model = Order
         fields = ['id', 'user', 'menu', 'dishes', 'note']
-        # fields = '__all__'
+
+    def validate(self, data):
+        """
+        Validates that dishes nested objects len is more than one, and also validate if they belongs to todays menu
+        """
+        dishes = data['dishes']
+        if not dishes:
+            raise serializers.ValidationError(
+                "Your order must have at least one dish")
+        menu = data['menu']
+        data['dishes'] = menu.validateDishesBelonging(
+            dishes)
+        data['user'] = self.context['user']
+
+        return data
 
     def create(self, validated_data):
         menu = validated_data.get('menu')
-        if not menu.isAvailable():
+        if not menu.isTodayMenu():
             raise ValidationError(
                 {'detail': f'The menu {menu.id}" is not Todays menu'})
 
+        menu.isAvailable()
+
         dishes = validated_data.pop('dishes')
-        validated_dishes = Menu.objects.validateDishes(
-            dishes, validated_data.get('menu'))
-        if not validated_dishes:
-            raise ValidationError(
-                {'detail': f'Your order must have at least one dish'})
+
         order = Order.objects.create(**validated_data)
-        order.dishes.set(validated_dishes)
+        order.dishes.set(dishes)
         return order
 
     def update(self, instance, validated_data):
@@ -35,10 +49,6 @@ class OrderSerializer(serializers.ModelSerializer):
         instance.save()
 
         dishes = validated_data.pop('dishes')
-        Menu.objects.validateDishes(
-            dishes, instance.menu)
-
-        if dishes:
-            Order.objects.setDishes(dishes, instance)
+        instance.dishes.set(dishes)
 
         return instance
