@@ -12,55 +12,10 @@ from django.shortcuts import get_object_or_404
 # Create your views here.
 
 
-class MenuAPIView(APIView):
+class GenericMenuAPIView(generics.GenericAPIView, mixins.ListModelMixin,
+                         mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
 
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        menus = Menu.objects.all()
-        serializer = MenuSerializer(menus, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = MenuSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class MenuDetails(APIView):
-
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self, id):
-        try:
-            return Menu.objects.get(id=id)
-
-        except Menu.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def get(self, request, id):
-        menu = self.get_object(id)
-        serializer = MenuSerializer(menu)
-        return Response(serializer.data)
-
-    def put(self, request, id):
-        menu = self.get_object(id)
-        serializer = MenuSerializer(menu, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, id):
-        menu = self.get_object(id)
-        menu.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class GenericAPIView(generics.GenericAPIView, mixins.ListModelMixin,
-                     mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
+    permission_classes = [IsAuthenticated, IsAdminUser]
     serializer_class = MenuSerializer
     queryset = Menu.objects.all()
 

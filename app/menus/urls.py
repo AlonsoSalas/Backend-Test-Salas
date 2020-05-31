@@ -1,10 +1,9 @@
 from django.urls import path, include
-from .views import MenuAPIView, MenuDetails, GenericAPIView
+from .views import GenericMenuAPIView
 
 urlpatterns = [
-    # path('', MenuAPIView.as_view()),
-    # path('<int:id>/', MenuDetails.as_view()),
-    path('<int:id>/', GenericAPIView.as_view()),
-    path('', GenericAPIView.as_view())
+
+    path('<int:id>/', GenericMenuAPIView.as_view()),
+    path('', GenericMenuAPIView.as_view())
 
 ]
