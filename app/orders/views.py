@@ -5,6 +5,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework import generics
+from rest_framework import mixins
+from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
 # Create your views here.
 
 
@@ -53,3 +57,20 @@ class OrderDetails(APIView):
         menu = self.get_object(id)
         menu.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class GenericOrderView(generics.GenericAPIView, mixins.ListModelMixin,
+                       mixins.CreateModelMixin, mixins.RetrieveModelMixin):
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()
+
+    lookup_field = 'id'
+
+    def get(self, request, id=None):
+        if id:
+            return self.retrieve(request)
+        else:
+            return self.list(request)
+
+    def post(self, request):
+        return self.create(request)
