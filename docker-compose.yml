@@ -1,6 +1,7 @@
 version: "3"
 
 services:
+  # postgres database
   db:
     image: postgres
     environment:
@@ -9,7 +10,8 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
-  app:
+  # python app
+  app: &app
     build:
       context: .
     ports:
@@ -20,5 +22,18 @@ services:
       sh -c "python manage.py runserver 0.0.0.0:8007"
     depends_on:
       - db
+      - rabbitmq
+      - celery_worker
     env_file:
       - ./.env.example
+  # rabbit message queue
+  rabbitmq:
+    image: rabbitmq:3.8-alpine
+  # celery worker service
+  celery_worker:
+    <<: *app
+    command: celery -A mealvery worker --loglevel=info
+    ports: []
+    depends_on:
+      - db
+      - rabbitmq
