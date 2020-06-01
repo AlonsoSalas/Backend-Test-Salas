@@ -35,3 +35,17 @@ class GenericMenuAPIView(generics.GenericAPIView, mixins.ListModelMixin,
 
     def delete(self, request, id=None):
         return self.destroy(request, id)
+
+
+class PublicMenuApiView(generics.GenericAPIView, mixins.RetrieveModelMixin):
+    serializer_class = MenuSerializer
+    queryset = Menu.objects.all()
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        return Menu.objects.getTodayMenu()
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_queryset()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
