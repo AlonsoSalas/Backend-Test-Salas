@@ -18,7 +18,13 @@ class MenuManager(models.Manager):
         return MenuQuerySet(self.model, using=self._db)
 
     def getTodayMenu(self):
-        return self.get(date=datetime.date.today())
+        try:
+            menu = self.get(date=datetime.date.today())
+            menu.isAvailable()
+            return menu
+        except ObjectDoesNotExist:
+            raise NotFound(
+                {'detail': 'There\'s no menu for today'})
 
     def MenuByDate(self, date):
         return self.get(date=date)
