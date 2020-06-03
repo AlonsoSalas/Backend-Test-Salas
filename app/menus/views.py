@@ -9,6 +9,7 @@ from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
+from .permissions import isTodayMenu
 # Create your views here.
 
 
@@ -41,11 +42,7 @@ class PublicMenuApiView(generics.GenericAPIView, mixins.RetrieveModelMixin):
     serializer_class = MenuSerializer
     queryset = Menu.objects.all()
     lookup_field = 'id'
+    permission_classes = [isTodayMenu]
 
-    def get_queryset(self):
-        return Menu.objects.getTodayMenu()
-
-    def get(self, request, *args, **kwargs):
-        instance = self.get_queryset()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+    def get(self, request, id=None):
+        return self.retrieve(request)
