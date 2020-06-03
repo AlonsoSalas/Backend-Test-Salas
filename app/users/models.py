@@ -15,5 +15,3 @@ class CustomUser(AbstractUser):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
-
-# TODO: CREAR UN PRE_SAVE METODO PARA CALCULAR EL TOTAL DE UNA ORDEN
