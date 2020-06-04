@@ -2,6 +2,7 @@ from django.db import models
 from dishes.models import Dish
 from .managers import MenuManager
 from datetime import datetime as dt
+from common.models import BaseModel
 import datetime
 import os
 from rest_framework.exceptions import ValidationError
@@ -13,11 +14,7 @@ import uuid
 # Create your models here.
 
 
-class Menu(models.Model):
-    id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+class Menu(BaseModel):
     name = models.CharField(max_length=100)
     date = models.DateField('date published')
     dishes = models.ManyToManyField(Dish)

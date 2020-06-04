@@ -6,13 +6,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 import uuid
+from common.models import BaseModel
 
 
-class CustomUser(AbstractUser):
-    id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+class CustomUser(AbstractUser, BaseModel):
     email = models.EmailField(unique=True)
 
 
