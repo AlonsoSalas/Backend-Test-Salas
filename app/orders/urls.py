@@ -4,7 +4,7 @@ from .views import GenericOrderView
 
 urlpatterns = [
 
-    path('<int:id>/', GenericOrderView.as_view()),
+    path('<uuid:id>/', GenericOrderView.as_view()),
     path('', GenericOrderView.as_view())
 
 ]
