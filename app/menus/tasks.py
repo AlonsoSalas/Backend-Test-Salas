@@ -1,41 +1,39 @@
 
 from __future__ import absolute_import, unicode_literals
 import os
+import asyncio
 from celery import shared_task
 from slack import WebClient
 from slack.errors import SlackApiError
 from time import time
-import asyncio
 
 slack_token = os.environ.get('SLACK_TOKEN')
-slackClient = WebClient(slack_token)
 
 
 @shared_task
 def sendMenuToSlack():
-    # print('holaaa')
-    asyncio.run(sendMessage())
+    slackClient = WebClient(slack_token, run_async=True)
+    asyncio.run(sendMessage(slackClient))
 
 
-async def sendMessage():
-    # print('llegue aqui ')
-    users = await getUsers()
-    channels = await getChannels(users)
+async def sendMessage(slackClient) -> None:
+    users = await getUsers(slackClient)
+    channels = await getChannels(slackClient, users)
+    promises = [slackClient.chat_postMessage(channel=channel,
+                                             text="que paso pruebaxx") for channel in channels]
+    await asyncio.gather(*promises)
 
-    await asyncio.gather(slackClient.chat_postMessage(channel=channel,
-                                                      text="que paso prueba") for channel in channels if channel)
 
-
-async def getChannels(users):
+async def getChannels(slackClient, users):
     channels = []
     for user in users:
-        conversation = await getConversation(user)
+        conversation = await getConversation(slackClient, user)
         channels.append(conversation['channel']['id'])
 
     return channels
 
 
-async def getConversation(user):
+async def getConversation(slackClient, user):
     try:
         conversation = await slackClient.conversations_open(
             users=[user])
@@ -45,15 +43,12 @@ async def getConversation(user):
         pass
 
 
-async def getUsers():
+async def getUsers(slackClient):
     try:
         response = await slackClient.users_list()
         users = response["members"]
-        print('users')
-        print(users)
         userlist = list(user['id']
                         for user in users if not user['is_bot'])
-        print(userlist)
         return userlist
     except SlackApiError as e:
         print(f"Got an error: {e.response['error']}")
