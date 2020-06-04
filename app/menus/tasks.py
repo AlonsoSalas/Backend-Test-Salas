@@ -6,21 +6,27 @@ from celery import shared_task
 from slack import WebClient
 from slack.errors import SlackApiError
 from time import time
+from menus.models import Menu
 
 slack_token = os.environ.get('SLACK_TOKEN')
 
 
 @shared_task
 def sendMenuToSlack():
+    menu = Menu.objects.getTodayMenu()
+    if menu:
+        message = f'Hello Here is the link for todays Menu!.\n\nhttps://nora.cornershop.io/menu/{menu.id}'
+    else:
+        message = f'Hello There is no menu for today, Sorry'
     slackClient = WebClient(slack_token, run_async=True)
-    asyncio.run(sendMessage(slackClient))
+    asyncio.run(sendMessage(slackClient, message))
 
 
-async def sendMessage(slackClient) -> None:
+async def sendMessage(slackClient, message) -> None:
     users = await getUsers(slackClient)
     channels = await getChannels(slackClient, users)
     promises = [slackClient.chat_postMessage(channel=channel,
-                                             text="que paso pruebaxx") for channel in channels]
+                                             text=message) for channel in channels]
     await asyncio.gather(*promises)
 
 
