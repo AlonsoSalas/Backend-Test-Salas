@@ -8,11 +8,16 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.exceptions import ValidationError, NotFound
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import localdate
+import uuid
 
 # Create your models here.
 
 
 class Menu(models.Model):
+    id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     name = models.CharField(max_length=100)
     date = models.DateField('date published')
     dishes = models.ManyToManyField(Dish)
