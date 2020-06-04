@@ -19,7 +19,7 @@ class GenericOrderView(generics.GenericAPIView, mixins.ListModelMixin,
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
 
-    permission_classes = [IsAuthenticated, IsRegularUser]
+    permission_classes = [IsAuthenticated]
 
     lookup_field = 'id'
 
@@ -27,6 +27,8 @@ class GenericOrderView(generics.GenericAPIView, mixins.ListModelMixin,
         return {'user': self.request.user}
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return Order.objects.all()
         return Order.objects.filter(user=self.request.user)
 
     def get(self, request, id=None):
