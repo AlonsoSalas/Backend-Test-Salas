@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -86,7 +87,6 @@ REST_FRAMEWORK = {
     ]
 }
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -102,6 +102,14 @@ DATABASES = {
 }
 
 CELERY_BROKER_URL = "amqp://rabbitmq"
+CELERY_TIMEZONE = 'America/Santiago'
+CELERY_BEAT_SCHEDULE = {
+    'send-daily-menu': {
+        'task': 'menus.tasks.sendMenuToSlack',
+        # Every Day at 8am
+        'schedule': crontab(minute=0, hour=8),
+    },
+}
 
 
 # Password validation
@@ -130,7 +138,7 @@ AUTH_USER_MODEL = "users.CustomUser"
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
 
