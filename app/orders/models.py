@@ -8,7 +8,7 @@ import uuid
 # Create your models here.
 
 
-class Order(models.Model):
+class Order(BaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.SET_NULL, null=True)
     menu = models.ForeignKey(Menu, on_delete=models.SET_NULL, null=True)
