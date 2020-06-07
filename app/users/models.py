@@ -7,10 +7,12 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 import uuid
 from common.models import BaseModel
+from .managers import UserManager
 
 
 class CustomUser(AbstractUser, BaseModel):
     email = models.EmailField(unique=True)
+    objects = UserManager()
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
