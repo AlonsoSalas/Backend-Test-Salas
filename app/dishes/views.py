@@ -33,33 +33,3 @@ class DishAPIView(generics.GenericAPIView, mixins.ListModelMixin,
 
     def delete(self, request, id=None):
         return self.destroy(request, id)
-
-
-# class DishDetails(APIView):
-
-#     permission_classes = [IsAuthenticated, IsAdminUser]
-
-#     def get_object(self, id):
-#         try:
-#             return Dish.objects.get(id=id)
-
-#         except Dish.DoesNotExist:
-#             return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     def get(self, request, id):
-#         menu = self.get_object(id)
-#         serializer = DishSerializer(menu)
-#         return Response(serializer.data)
-
-#     def put(self, request, id):
-#         menu = self.get_object(id)
-#         serializer = DishSerializer(menu, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#     def delete(self, request, id):
-#         menu = self.get_object(id)
-#         menu.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
