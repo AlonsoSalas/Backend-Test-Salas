@@ -7,7 +7,7 @@ import uuid
 
 
 class Dish(BaseModel):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     description = models.CharField(max_length=200)
 
     objects = DishManager()
