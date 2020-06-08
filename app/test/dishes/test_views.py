@@ -7,12 +7,6 @@ from datetime import date
 from test.helper import AuthAPIRequestFactory
 
 
-@pytest.fixture
-def super_user(db, django_user_model):
-    return django_user_model.objects.create_superuser({
-        'email': 'admin@gmail.com', 'first_name': 'admin', 'last_name': "admin", 'password': "1234", 'password2': "1234", 'username': "admin"})
-
-
 @pytest.mark.urls('dishes.urls')
 @pytest.mark.django_db
 class TestDishApiView:
