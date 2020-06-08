@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from orders.serializers import OrderSerializer
 from orders.models import Order
 from dishes.models import Dish
-from orders.models import Menu
+from menus.models import Menu
 from test.helper import AuthAPIRequestFactory
 from uuid import uuid4
 from datetime import date, timedelta
