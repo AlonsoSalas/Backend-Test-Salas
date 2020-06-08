@@ -18,8 +18,7 @@ class AuthAPIRequestFactory(APIRequestFactory):
         return request
 
     def put(self, user, *args, **kwargs):
-        print('args')
-        print(args)
+
         request = super().put(*args, **kwargs)
         force_authenticate(request, user=user)
         return request
@@ -30,13 +29,13 @@ class AuthAPIRequestFactory(APIRequestFactory):
         return request
 
 
-@pytest.fixture
-def super_user(db, django_user_model):
-    return django_user_model.objects.create_superuser({
-        'email': 'admin@gmail.com', 'first_name': 'admin', 'last_name': "admin", 'password': "1234", 'username': "admin"})
-
-
 @ pytest.fixture
 def regular_user(db, django_user_model):
     return django_user_model.objects.create_user(
-        email='alfa@gmail.com', first_name='alfa', last_name="alfa", password="12345678",)
+        email='regular@gmail.com', password="regular", username="regular")
+
+
+@pytest.fixture
+def super_user(db, django_user_model):
+    return django_user_model.objects.create_superuser(
+        email='admin@gmail.com', password="1234", username="admin")
