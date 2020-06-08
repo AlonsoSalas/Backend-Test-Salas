@@ -43,4 +43,6 @@ class PublicMenuApiView(generics.RetrieveAPIView):
     queryset = Menu.objects.all()
 
     def get_object(self):
-        return Menu.objects.getTodayMenu()
+        menu = Menu.objects.getTodayMenu()
+        menu.isAvailable()
+        return menu
