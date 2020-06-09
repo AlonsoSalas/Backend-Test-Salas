@@ -2,7 +2,6 @@ import pytest
 import json
 from menus.views import GenericMenuAPIView
 from menus.models import Menu
-from datetime import date
 from test.helper import AuthAPIRequestFactory
 
 

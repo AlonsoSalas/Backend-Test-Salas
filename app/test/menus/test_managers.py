@@ -1,9 +1,8 @@
 import pytest
-from rest_framework.exceptions import ValidationError, NotFound
+from rest_framework.exceptions import NotFound
 from menus.models import Menu
 from datetime import date
 import datetime
-from uuid import uuid4
 
 
 @pytest.mark.django_db

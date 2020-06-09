@@ -1,8 +1,6 @@
 import pytest
-from rest_framework.exceptions import ValidationError, NotFound
+from rest_framework.exceptions import NotFound
 from dishes.models import Dish
-from datetime import date
-from uuid import uuid4
 
 
 @pytest.mark.django_db
@@ -29,7 +27,7 @@ class TestDishManager:
     ])
     def test_not_validate_dishes(self, dishes):
         """
-        Should raise a ValidationError when one of the dishes does not exist in the database
+        Should raise a NotFound when one of the dishes does not exist in the database
         """
 
         with pytest.raises(NotFound):

@@ -3,8 +3,7 @@ from rest_framework.exceptions import ValidationError
 from menus.serializers import MenuSerializer
 from menus.models import Menu
 from dishes.models import Dish
-from uuid import uuid4
-from datetime import date, timedelta
+from datetime import timedelta
 import datetime
 
 

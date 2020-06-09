@@ -1,9 +1,6 @@
 import pytest
 
-from rest_framework.test import force_authenticate
-from rest_framework.test import APIRequestFactory
-
-factory = APIRequestFactory()
+from rest_framework.test import force_authenticate, APIRequestFactory
 
 
 class AuthAPIRequestFactory(APIRequestFactory):

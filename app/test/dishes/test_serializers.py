@@ -1,9 +1,6 @@
 import pytest
 from rest_framework.exceptions import ValidationError
 from dishes.serializers import DishSerializer
-from dishes.models import Dish
-from uuid import uuid4
-from datetime import date, timedelta
 
 
 @pytest.mark.django_db

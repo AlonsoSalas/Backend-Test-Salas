@@ -2,7 +2,6 @@ import pytest
 import json
 from dishes.views import DishAPIView
 from dishes.models import Dish
-from datetime import date
 from test.helper import AuthAPIRequestFactory
 
 
