@@ -15,7 +15,8 @@ slack_token = os.environ.get('SLACK_TOKEN')
 def sendMenuToSlack():
     menu = Menu.objects.getTodayMenu()
     if menu:
-        message = f'Hello Here is the link for todays Menu!.\n\nhttps://nora.cornershop.io/menu/{menu.id}'
+        url = os.environ.get('TODAY_MENU_URL').format(menu.id)
+        message = f'Hello Here is the link for todays Menu!.\n\n{url}'
     else:
         message = f'Hello There is no menu for today, Sorry'
     slackClient = WebClient(slack_token, run_async=True)

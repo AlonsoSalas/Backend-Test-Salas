@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'j2d^#h7^wjc)pwk-^q_n5xysl%(bx2d=qd5ibxjwv9v01$s_77'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'xxx')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -98,24 +98,25 @@ SIMPLE_JWT = {
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mealvery',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
-        'PORT': 5432,
+        "ENGINE": os.environ.get("PSQL_ENGINE", "django.db.backends.postgresql"),
+        "NAME": os.environ.get("PSQL_DATABASE", "mealvery"),
+        "USER": os.environ.get("PSQL_USER", "postgres"),
+        "PASSWORD": os.environ.get("PSQL_PASSWORD", "postgres"),
+        "HOST": os.environ.get("PSQL_HOST", "db"),
+        "PORT": os.environ.get("PSQL_PORT", "5432"),
     }
 }
 
-CELERY_BROKER_URL = "amqp://rabbitmq"
+CELERY_BROKER_URL = os.environ.get("AMPQ_URI", "amqp://rabbitmq"),
 CELERY_TIMEZONE = 'America/Santiago'
 CELERY_BEAT_SCHEDULE = {
     'send-daily-menu': {
         'task': 'menus.tasks.sendMenuToSlack',
-        # Every Day at 8am
-        'schedule': crontab(minute=0, hour=8),
+        # Every Day at 9 AM
+        'schedule': crontab(minute=0, hour=9),
     },
 }
 
