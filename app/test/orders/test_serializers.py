@@ -17,7 +17,7 @@ class TestOrderSerializer:
 
     def test_valid_incoming_data(self, super_user, mocker):
         """
-        Should return True when the incoming data is valid
+        Should return True if the data is valid
         """
         dish = Dish.objects.create(
             name="Lasagna",
@@ -51,7 +51,7 @@ class TestOrderSerializer:
 
     def test_invalid_data(self):
         """
-        Should raise a ValidationError when the incoming data is not valid
+        Should raise a ValidationError if the data is not valid
         """
         mock_order = {
             "menu": '123',
@@ -66,7 +66,7 @@ class TestOrderSerializer:
 
     def test_create(self, super_user, mocker):
         """
-        Should raise a ValidationError when the incoming data is not valid
+        Should call objects.create if the data is valid
         """
         dish = Dish.objects.create(
             name="Lasagna",
@@ -102,7 +102,7 @@ class TestOrderSerializer:
 
     def test_update(self, mocker, super_user):
         """
-        Should call instance.save() method and update the instance
+        Should call order.save if the data is valid
         """
 
         dish = Dish.objects.create(
@@ -129,7 +129,6 @@ class TestOrderSerializer:
 
         order = Order.objects.create(
             menu=menu,
-            # dishes=order_mock['dishes'],
             note=order_mock['note'],
             user=super_user
         )

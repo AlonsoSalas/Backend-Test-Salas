@@ -7,6 +7,9 @@ import uuid
 
 
 class Dish(BaseModel):
+    """
+    Dish model class
+    """
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
 

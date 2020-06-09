@@ -14,7 +14,7 @@ class TestDishSerializer:
     ])
     def test_valid_incoming_data(self, dish):
         """
-        Should return True when the incoming data is valid
+        Should return True when the data is valid
         """
 
         serializer = DishSerializer(data=dish)
@@ -27,7 +27,7 @@ class TestDishSerializer:
     ])
     def test_invalid_data(self, dish):
         """
-        Should raise a ValidationError when the incoming data is not valid
+        Should raise a ValidationError when the data is not valid
         """
 
         serializer = DishSerializer(data=dish)

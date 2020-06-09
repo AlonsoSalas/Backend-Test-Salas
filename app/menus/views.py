@@ -9,7 +9,6 @@ from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
-from .permissions import isTodayMenu
 # Create your views here.
 
 
@@ -43,6 +42,6 @@ class PublicMenuApiView(generics.RetrieveAPIView):
     queryset = Menu.objects.all()
 
     def get_object(self):
-        menu = Menu.objects.getTodayMenu()
-        menu.isAvailable()
+        menu = Menu.objects.get_today_menu()
+        menu.is_available()
         return menu

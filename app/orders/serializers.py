@@ -24,7 +24,7 @@ class OrderSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Your order must have at least one dish")
         menu = data['menu']
-        data['dishes'] = menu.validateDishesBelonging(
+        data['dishes'] = menu.validate_dishes_belonging(
             dishes)
         data['user'] = self.context['user']
 
@@ -32,11 +32,11 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         menu = validated_data.get('menu')
-        if not menu.isTodayMenu():
+        if not menu.is_today_menu():
             raise ValidationError(
                 {'detail': f'The menu {menu.id}" is not Todays menu'})
 
-        menu.isAvailable()
+        menu.is_available()
 
         dishes = validated_data.pop('dishes')
 

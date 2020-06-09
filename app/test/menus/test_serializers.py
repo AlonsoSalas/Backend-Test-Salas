@@ -21,7 +21,7 @@ class TestMenuSerializer:
     ])
     def test_valid_incoming_data(self, menu):
         """
-        Should return True when the incoming data is valid
+        Should return True when if the data is valid
         """
 
         serializer = MenuSerializer(data=menu)
@@ -35,7 +35,7 @@ class TestMenuSerializer:
     ])
     def test_invalid_data(self, menu):
         """
-        Should raise a ValidationError when the incoming data is not valid
+        Should raise a ValidationError if the data is not valid
         """
 
         serializer = MenuSerializer(data=menu)
@@ -55,7 +55,7 @@ class TestMenuSerializer:
     ])
     def test_create(self, mocker, menu_mock):
         """
-        Should raise a ValidationError when the incoming data is not valid
+        Should call Menu.objects.create and validate the dishes if data is valid
         """
 
         dish = menu_mock['dishes'][0]
@@ -68,16 +68,16 @@ class TestMenuSerializer:
         menu_mock['dishes'] = []
         serializer = MenuSerializer(data=menu_mock)
 
-        mocker.patch.object(Dish.objects, 'validateDishes',
+        mocker.patch.object(Dish.objects, 'validate_dishes',
                             return_value=[dish])
         mocker.spy(Menu.objects, 'create')
-        mocker.spy(Dish.objects, 'validateDishes')
+        mocker.spy(Dish.objects, 'validate_dishes')
 
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
         Menu.objects.create.assert_called_once()
-        Dish.objects.validateDishes.assert_called_once()
+        Dish.objects.validate_dishes.assert_called_once()
 
     @pytest.mark.parametrize('menu_mock', [
         ({
@@ -88,7 +88,7 @@ class TestMenuSerializer:
     ])
     def test_update(self, mocker, menu_mock):
         """
-        Should call instance.save() method and update the instance 
+        Should call menu.save and retrieve the updated menu
         """
 
         menu = Menu.objects.create(
@@ -98,20 +98,20 @@ class TestMenuSerializer:
 
         serializer = MenuSerializer(menu, data=menu_mock)
 
-        mocker.patch.object(Dish.objects, 'validateDishes',
+        mocker.patch.object(Dish.objects, 'validate_dishes',
                             return_value=[])
-        mocker.spy(Dish.objects, 'validateDishes')
+        mocker.spy(Dish.objects, 'validate_dishes')
 
         mocker.spy(menu, 'save')
-        mocker.spy(menu, 'isTodayMenu')
+        mocker.spy(menu, 'is_today_menu')
 
         serializer.is_valid()
         serializer.save()
 
         menu.refresh_from_db()
 
-        menu.isTodayMenu.assert_called_once()
-        Dish.objects.validateDishes.assert_called_once()
+        menu.is_today_menu.assert_called_once()
+        Dish.objects.validate_dishes.assert_called_once()
         menu.save.assert_called_once()
 
         assert getattr(menu, 'name') == menu_mock.get('name')

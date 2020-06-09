@@ -1,18 +1,16 @@
 import pytest
 import json
-from django.urls import reverse
 from menus.views import GenericMenuAPIView
 from menus.models import Menu
 from datetime import date
 from test.helper import AuthAPIRequestFactory
 
 
-@pytest.mark.urls('menus.urls')
 @pytest.mark.django_db
 class TestMenuApiView:
     def test_create(self, mocker, super_user):
         """
-        Should return status code 201 and call place_order method through serializers
+        Should return status code 201 and return the created menu
         """
         url = 'menu/'
         menu = {
@@ -27,7 +25,6 @@ class TestMenuApiView:
         response = GenericMenuAPIView.as_view()(request).render()
 
         content = json.loads(response.content)
-        print(content)
 
         assert response.status_code == 201
         assert 'Lasagna' in content['name']
@@ -36,7 +33,7 @@ class TestMenuApiView:
 
     def test_list(self, mocker, super_user):
         """
-        Should return status code 200 and filter the response by the appropriate user
+        Should return status code 200 return an array of 1 menu
         """
         Menu.objects.create(
             name='Lasagna',
@@ -55,14 +52,13 @@ class TestMenuApiView:
 
     def test_update(self, mocker, super_user):
         """
-        Should return status code 200
+        Should return status code 200 and retrieve the updated menu
         """
         menu = Menu.objects.create(
             name='Lasagna',
             date='2020-01-01'
         )
         id = str(menu.id)
-        print('entre aqui')
         menu_edited = {
             'name': 'Lasagna edited',
             'date': '2020-01-01',
@@ -71,21 +67,19 @@ class TestMenuApiView:
 
         url = "menu/{0}/".format(id)
 
-        print(url)
         request = AuthAPIRequestFactory().put(
             super_user, url, menu_edited, format='json')
 
         response = GenericMenuAPIView.as_view()(request, id=id).render()
 
         content = json.loads(response.content)
-        print(content)
         assert response.status_code == 200
         assert content.get('id') == str(menu.id)
         assert content.get('name') == menu_edited.get('name')
 
     def test_retrieve(self, mocker, super_user):
         """
-        Should return status code 200 and filter the response by the appropriate user
+        Should return status code 200 and return the specific menu
         """
         menu = Menu.objects.create(
             name='Lasagna',

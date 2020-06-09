@@ -80,13 +80,10 @@ WSGI_APPLICATION = 'mealvery.wsgi.application'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.IsAuthenticated',
-        # 'rest_framework.permissions.IsAdminUser',
+
     ]
 }
 
@@ -114,7 +111,7 @@ CELERY_BROKER_URL = os.environ.get("AMPQ_URI", "amqp://rabbitmq"),
 CELERY_TIMEZONE = 'America/Santiago'
 CELERY_BEAT_SCHEDULE = {
     'send-daily-menu': {
-        'task': 'menus.tasks.sendMenuToSlack',
+        'task': 'menus.tasks.send_menu_to_slack',
         # Every Day at 9 AM
         'schedule': crontab(minute=0, hour=9),
     },

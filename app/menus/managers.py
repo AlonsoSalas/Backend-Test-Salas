@@ -6,7 +6,17 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 class MenuManager(models.Manager):
-    def getTodayMenu(self):
+    """
+    Menu Manager.
+    """
+
+    def get_today_menu(self):
+        """
+        Get Todays Menu
+
+        Raises:
+            NotFound: [If there is no Menu for today]
+        """
         try:
             menu = self.get(date=datetime.date.today())
             return menu

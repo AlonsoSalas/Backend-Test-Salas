@@ -1,6 +1,5 @@
 import pytest
 import json
-from django.urls import reverse
 from orders.views import GenericOrderView
 from orders.models import Order
 from dishes.models import Dish
@@ -12,12 +11,11 @@ import os
 import datetime
 
 
-@pytest.mark.urls('orders.urls')
 @pytest.mark.django_db
 class TestOrderApiView:
     def test_create(self, mocker, super_user):
         """
-        Should return status code 201 and call place_order method through serializers
+        Should return status code 201 and return the created order
         """
         mocker.patch.dict(os.environ, {'LIMIT_HOUR_TO_ORDER': '23'})
 
@@ -45,7 +43,6 @@ class TestOrderApiView:
 
         order = Order.objects.create(
             menu=menu,
-            # dishes=order_mock['dishes'],
             note=order_mock['note'],
             user=super_user
         )
@@ -57,7 +54,6 @@ class TestOrderApiView:
         response = GenericOrderView.as_view()(request).render()
 
         content = json.loads(response.content)
-        print(content)
         assert response.status_code == 201
         assert str(menu.id) in content['menu']
         assert order_mock['note'] in content['note']
@@ -66,9 +62,8 @@ class TestOrderApiView:
 
     def test_list(self, mocker, super_user):
         """
-        Should return status code 200 and filter the response by the appropriate user
+        Should return status code 200 and get an array with just one order
         """
-
         url = 'order/'
         dish = Dish.objects.create(
             name="Lasagna",
@@ -81,7 +76,6 @@ class TestOrderApiView:
         menu.dishes.set([dish])
         Order.objects.create(
             menu=menu,
-            # dishes=order_mock['dishes'],
             note='not spicy plz',
             user=super_user
         )
@@ -97,7 +91,7 @@ class TestOrderApiView:
 
     def test_retrieve(self, mocker, super_user):
         """
-        Should return status code 200 and filter the response by the appropriate user
+        Should return status code 200 and get the specific order
         """
         dish = Dish.objects.create(
             name="Lasagna",
@@ -110,7 +104,6 @@ class TestOrderApiView:
         menu.dishes.set([dish])
         order = Order.objects.create(
             menu=menu,
-            # dishes=order_mock['dishes'],
             note='not spicy plz',
             user=super_user
         )

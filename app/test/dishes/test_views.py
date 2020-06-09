@@ -1,18 +1,16 @@
 import pytest
 import json
-from django.urls import reverse
 from dishes.views import DishAPIView
 from dishes.models import Dish
 from datetime import date
 from test.helper import AuthAPIRequestFactory
 
 
-@pytest.mark.urls('dishes.urls')
 @pytest.mark.django_db
 class TestDishApiView:
     def test_create(self, mocker, super_user):
         """
-        Should return status code 201 and call place_order method through serializers
+        Should call dish.objects.create and return status code 201
         """
         url = 'dish/'
         dish = {
@@ -34,7 +32,7 @@ class TestDishApiView:
 
     def test_list(self, mocker, super_user):
         """
-        Should return status code 200 and filter the response by the appropriate user
+        Should return status code 200 and return on dish 
         """
         Dish.objects.create(
             name='Lasagna',
@@ -53,7 +51,7 @@ class TestDishApiView:
 
     def test_update(self, mocker, super_user):
         """
-        Should return status code 200
+        Should return status code 200 and retrieve the updated dish
         """
         dish = Dish.objects.create(
             name='Lasagna',
@@ -67,11 +65,8 @@ class TestDishApiView:
 
         url = "dish/{0}/".format(id)
 
-        print(url)
         request = AuthAPIRequestFactory().put(
             super_user, url, dish_edited, format='json')
-
-        print(request)
 
         response = DishAPIView.as_view()(request, id=id).render()
 
@@ -83,7 +78,7 @@ class TestDishApiView:
 
     def test_retrieve(self, mocker, super_user):
         """
-        Should return status code 200 and filter the response by the appropriate user
+        Should return status code 200 and return the specific dish
         """
         dish = Dish.objects.create(
             name='Lasagna',

@@ -15,6 +15,9 @@ import uuid
 
 
 class Menu(BaseModel):
+    """
+    Menu model class
+    """
     name = models.CharField(max_length=100)
     date = models.DateField('date published')
     dishes = models.ManyToManyField(Dish)
@@ -24,11 +27,20 @@ class Menu(BaseModel):
     def __str__(self):
         return self.name
 
-    def isTodayMenu(self):
+    def is_today_menu(self) -> bool:
+        """
+        [Determines whether or not the instance menu is todays menus]
+        """
         today = datetime.date.today()
         return self.date == today
 
-    def isAvailable(self):
+    def is_available(self):
+        """
+        [Determines whether or not the instance menu is available to take orders]
+
+        Raises:
+            NotFound: [ If the hour limit has passed ]
+        """
         today = datetime.date.today()
         limit_hour = int(os.environ.get('LIMIT_HOUR_TO_ORDER'))
         limit_datetime = dt(
@@ -39,7 +51,16 @@ class Menu(BaseModel):
                 {'detail': f'The menu was avialiable until "{limit_hour}"'})
         pass
 
-    def validateDishesBelonging(self, dishes):
+    def validate_dishes_belonging(self, dishes):
+        """
+        [Determines whether or not the dishes belongs to instance menu ]
+
+        Arguments:
+            dishes [Dishes] -- [Dish objects array to be validated with the menu instance]
+
+        Raises:
+            NotFound: [ If one of those dishes doesn't belong to the menu instance]
+        """
         validatedDishes = []
         if dishes:
             for dish in dishes:
