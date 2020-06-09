@@ -6,3 +6,4 @@ djangorestframework-simplejwt==4.4.0
 pytest==5.4.3
 pytest-django==3.9.0
 pytest-mock==3.1.0
+django-rest-swagger==2.2.0
