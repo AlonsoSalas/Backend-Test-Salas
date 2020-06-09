@@ -77,4 +77,4 @@ Regarding the initial requirements, these are the features this app come with:
 
 ## API Documentation
 
-For the Api documentation I used the [Swagger Editor](https://editor.swagger.io/). The file `api-docs.yml` contains the description of the API based on OpenApi specifications. copy the content of `api-docs.yml` and paste on the [Swagger Editor](https://editor.swagger.io/
+For the Api documentation I used the [Swagger Editor](https://editor.swagger.io/). The file `api-docs.yml` contains the description of the API based on OpenApi specifications. copy the content of `api-docs.yml` and paste on the [Swagger Editor](https://editor.swagger.io/)
