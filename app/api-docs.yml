@@ -1,0 +1,552 @@
+openapi: "3.0.3"
+info:
+  version: 1.0.0
+  title: Mealvery API Documentation
+  description: |
+    Documentation of the Mealvery API
+
+paths:
+  /auth/login:
+    post:
+      description: |
+        User Authentication.
+      tags: [Authentication]
+      security: []
+      operationId: AuthenticationId
+      requestBody:
+        description: |
+          User's credentials (username, password)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthUser"
+
+      responses:
+        "200":
+          description: The refresh token and access token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refresh:
+                    type: string
+                  access:
+                    type: string
+
+        "401":
+          $ref: "#/components/responses/401InvalidCredential"
+          content:
+            detail:
+              type: string
+              example: No active account found with the given credentials.
+
+  /auth/register:
+    post:
+      description: |
+        Register a new regular user in the app
+      tags: [Sign Up]
+      security: []
+      operationId: SignUp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+
+      responses:
+        "201":
+          description: The new created user.
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Successfully registered a new user
+
+        "400":
+          $ref: "#/components/responses/400InvalidRegisterRequest"
+
+  /dish:
+    post:
+      description: |
+        Dish creation, only available for admin user
+      tags: [Dishes]
+      operationId: createDish
+      requestBody:
+        description: |
+          Dish's payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Dish"
+            example:
+              name: "Lasagna"
+              description: "Delicious lasagna ready to take you to heaven"
+
+      responses:
+        "201":
+          description: The created dish.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dish"
+
+        "400":
+          $ref: "#/components/responses/400DishInvalidRequest"
+
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+
+    get:
+      description: Gets all the dishes, only available for admin user
+      tags: [Dishes]
+      operationId: getDishes
+      responses:
+        "200":
+          description: All dishes created by admin
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dish"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+
+  /dish/{id}:
+    get:
+      description: Returns the dish data by ID, only available for admin user
+      tags: [Dishes]
+      operationId: getDishById
+      parameters:
+        - name: id
+          in: path
+          description: The dish ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: The dish data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dish"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+
+        "404":
+          $ref: "#/components/responses/404DishNotFoundRequest"
+
+    put:
+      description: Update Dish data, only available for admin user
+      operationId: updateDishById
+      parameters:
+        - name: id
+          in: path
+          description: The dish ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+
+      responses:
+        "200":
+          description: The updated dish data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dish"
+        "400":
+          $ref: "#/components/responses/400DishInvalidRequest"
+
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+
+        "404":
+          $ref: "#/components/responses/404DishNotFoundRequest"
+
+  /menu:
+    post:
+      description: |
+        Menu creation, this endpoint is only available for admin user, and the dishes has to be already created
+      tags: [Menus]
+      operationId: createMenu
+      requestBody:
+        description: |
+          Menu's payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menu"
+            example:
+              name: Menu1
+              date: "2020-06-08"
+              dishes:
+                [
+                  {
+                    name: "Lasagna",
+                    description: "Delicious lasagna ready to take you to heaven",
+                  },
+                ]
+      responses:
+        "201":
+          description: The created Menu.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+
+        "400":
+          $ref: "#/components/responses/400MenuInvalidRequest"
+
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+
+    get:
+      description: Gets all the menus, only available for admin user
+      tags: [Menus]
+      operationId: getMenus
+      responses:
+        "200":
+          description: The menus created previously
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Menu"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+
+  /menu/{id}:
+    get:
+      description: Retrieve menu data by ID, only available for admin user
+      tags: [Menus]
+      operationId: getMenuById
+      parameters:
+        - name: id
+          in: path
+          description: The menu ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Menu data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+
+        "404":
+          $ref: "#/components/responses/404MenuNotFoundRequest"
+
+    put:
+      description: Updates the menu data, only available for admin user
+      tags: [Menus]
+      operationId: updateMenuById
+      parameters:
+        - name: id
+          in: path
+          description: Menu ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menu"
+            example:
+              name: Edited Name Menu,
+              date: 2020-06-08,
+              dishes:
+                [
+                  {
+                    name: "Lasagna",
+                    description: "Delicious lasagna ready to take you to heaven",
+                  },
+                ]
+      responses:
+        "200":
+          description: The updated menu data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+        "400":
+          $ref: "#/components/responses/400MenuInvalidUpdateRequest"
+
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+
+        "404":
+          $ref: "#/components/responses/404MenuNotFoundRequest"
+
+  /menu/today:
+    get:
+      security: []
+      description: Return the menu assigned for today, public
+      tags: [Menus]
+      operationId: getTodaysMenu
+      responses:
+        "200":
+          description: Todays menu data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+        "404":
+          $ref: "#/components/responses/404MenuNotFoundRequest"
+
+  /order:
+    post:
+      description: |
+        Create an order for a menu, has to be for today's menu
+      tags: [Orders]
+      operationId: createOrder
+      requestBody:
+        description: |
+          Order's payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Order"
+            example:
+              menu: a8b4aa78-ebff-42f7-b98e-73b735480187
+              dishes:
+                [
+                  {
+                    name: "Lasagna",
+                    description: "Delicious lasagna ready to take you to heaven",
+                  },
+                ]
+              note: "Spicy please"
+
+      responses:
+        "201":
+          description: The created Dish.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dish"
+
+        "400":
+          $ref: "#/components/responses/400OrderInvalidRequest"
+
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+
+    get:
+      description: Gets all the orders created by the authenticated user, unless you are an admin, in that case you will list all orders
+      tags: [Orders]
+      operationId: getOrders
+      responses:
+        "200":
+          description: The orders created previously
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+
+components:
+  schemas:
+    DateBase:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date
+          readOnly: true
+
+    AuthUser:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+          writeOnly: true
+
+    User:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              readOnly: true
+            username:
+              type: string
+            email:
+              type: string
+              format: email
+            password:
+              type: string
+              format: password
+              writeOnly: true
+        - $ref: "#/components/schemas/DateBase"
+
+    Menu:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              readOnly: true
+            name:
+              type: string
+              maxLength: 30
+            date:
+              type: string
+              format: date
+            dishes:
+              type: array
+              items:
+                $ref: "#/components/schemas/Dish"
+        - $ref: "#/components/schemas/DateBase"
+
+    Dish:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              readOnly: true
+            name:
+              type: string
+              maxLength: 30
+            description:
+              type: string
+        - $ref: "#/components/schemas/DateBase"
+
+    Order:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              readOnly: true
+            menu:
+              allOf:
+                - readOnly: true
+                - $ref: "#/components/schemas/Menu"
+            dishes:
+              type: array
+              items:
+                $ref: "#/components/schemas/Dish"
+            note:
+              type: string
+              maxLength: 250
+        - $ref: "#/components/schemas/DateBase"
+
+    # Error Schemas
+
+    AuthRequestError:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: Authentication credentials were not provided.
+
+    NotFoundError:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: Not found.
+
+  responses:
+    400MenuInvalidRequest:
+      description: |
+        This error is raised when one of these conditions are met:
+
+        - There is a menu already created for the same date.
+        - At least one of the given dishes doesn't exist, or don't belong to given menu id
+        - One of the required fields is missing
+
+    400MenuInvalidUpdateRequest:
+      description: |
+        This error is raised when one of these conditions are met:
+
+        - At least one of the given dishes doesn't exist
+
+    400DishInvalidRequest:
+      description: |
+        This Error is raised when one of the required fields is missing
+
+    400OrderInvalidRequest:
+      description: |
+        This error is raised when some of the following conditions are met:
+
+        - At least one of the given dishes doesn't exist or doesn't belong to the given menu
+        - One of the required fields is missing
+
+    400InvalidRegisterRequest:
+      description: |
+        This error is raised when some of the following conditions are met:
+
+        - The email provided already exist.
+        - The username provided already exist.
+        - Some of the fields are missing.
+
+    401Unauthorized:
+      description: |
+        Error returned when the client try to consume a protected endpoint without Bearer token.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AuthRequestError"
+
+    401InvalidCredential:
+      description: |
+        The user has provided invalid credentials.
+
+    404MenuNotFoundRequest:
+      description: |
+        This Error is thrown when the menu you're searching for doesn't exist or doesn't belong to your scope.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
+
+    404DishNotFoundRequest:
+      description: |
+        This error is raised when the dish is not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
