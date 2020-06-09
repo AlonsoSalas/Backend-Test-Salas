@@ -35,7 +35,7 @@ class Menu(BaseModel):
             today.year, today.month, today.day, limit_hour)
 
         if dt.now() > limit_datetime:
-            raise ValidationError(
+            raise NotFound(
                 {'detail': f'The menu was avialiable until "{limit_hour}"'})
         pass
 
